@@ -4,6 +4,11 @@ import random
 
 from telebot import types
 
+buffer = ''
+score = 0
+arr = []
+curent_round_score = 0
+
 combinations = [
     ['1 2 3 4 5 6', '1', '1 1 1', '1 1 1 1', '1 1 1 1 1', '1 1 1 1 1 1', 
     '2 2 2', '2 2 2 2', '2 2 2 2 2', '2 2 2 2 2 2', 
@@ -11,7 +16,7 @@ combinations = [
     '4 4 4', '4 4 4 4', '4 4 4 4 4', '4 4 4 4 4 4', 
     '5', '5 5 5', '5 5 5 5', '5 5 5 5 5', '5 5 5 5 5 5', 
     '6 6 6', '6 6 6 6', '6 6 6 6 6', '6 6 6 6 6 6'], 
-    [1500, 100, 1000, 2000, 3000, 4000, 
+    [1500, '100', 1000, 2000, 3000, 4000, 
     200, 400, 600, 800, 
     300, 600, 900, 1200, 
     400, 800, 1200, 1600, 
@@ -19,20 +24,21 @@ combinations = [
     600, 1200, 1800, 2400] ]
 
 def game_results(message, n):
-    arr = []
-    inline_keyboard_arr = []
-    result_markup = types.InlineKeyboardMarkup(row_width=2)
+    arr.clear()
     for i in range(n):
         a = random.randrange(1, 7)
         arr.append(a)
         stik_path = 'stik\dice_' + str(a) + '.tgs'
         stik = open(stik_path, 'rb')
         bot.send_sticker(message.chat.id, stik)
-
     
+    result_markup = check_combinations(arr, False)
     buffer = 'Результат раунду:' + ' '.join(map(str, arr)) + "\n Можливі комбінації: "
-    
+    bot.send_message(message.chat.id, buffer, reply_markup=result_markup)
 
+def check_combinations(arr, bool):
+    inline_keyboard_arr = []
+    result_markup = types.InlineKeyboardMarkup(row_width=2)
     arr.sort()
     str_arr = ' '.join(map(str, arr))
 
@@ -50,12 +56,24 @@ def game_results(message, n):
                 item = types.InlineKeyboardButton(txt, callback_data=combinations[1][i])
                 inline_keyboard_arr.append(item)
 
-    for i in inline_keyboard_arr:
-        result_markup.add(i)
-    result_markup.add(types.InlineKeyboardButton('Наступние підкидання',callback_data='next'))
-    bot.send_message(message.chat.id, buffer, reply_markup=result_markup)
-
-
+    if bool:
+        if len(inline_keyboard_arr) > 0:
+            for i in inline_keyboard_arr:
+                result_markup.add(i)
+            result_markup.add(types.InlineKeyboardButton('Наступние підкидання',callback_data='next'))
+            return result_markup
+        else:
+            kkk = 0
+    else:
+        if len(inline_keyboard_arr) > 0:
+            for i in inline_keyboard_arr:
+                result_markup.add(i)
+            result_markup.add(types.InlineKeyboardButton('Наступние підкидання',callback_data='next'))
+            return result_markup
+        else:
+            curent_round_score = 0
+            result_markup.add(types.InlineKeyboardButton('Наступние підкидання',callback_data='next'))
+            return result_markup
 
 
 bot=telebot.TeleBot(config.Token)
@@ -80,7 +98,13 @@ def check_text(message):
 def callback_inline(call):
     try:
         if call.message:
-            bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Hi', reply_markup=None)
+            if call.data == '100':
+                print(arr)
+                arr.remove(1)
+                result_markup = check_combinations(arr, True)
+                buffer = 'Результат раунду:' + ' '.join(map(str, arr)) + "\n Можливі комбінації: "
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=buffer, reply_markup=result_markup)
+
     except Exception as e:
         print(repr(e))
 
