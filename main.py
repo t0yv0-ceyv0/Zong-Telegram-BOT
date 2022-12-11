@@ -55,7 +55,7 @@ def check_combinations(arr, bool):
                 result_markup.add(i)
             return result_markup
         else:
-            curent_round_score = 0
+            curent_round_score[0] = 0
             return result_markup
     else:
         if len(inline_keyboard_arr) > 0:
@@ -63,7 +63,7 @@ def check_combinations(arr, bool):
                 result_markup.add(i)
             return result_markup
         else:
-            curent_round_score = 0
+            curent_round_score[0] = 0
             return result_markup
 
 
