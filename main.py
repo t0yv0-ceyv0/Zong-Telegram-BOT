@@ -10,18 +10,12 @@ arr = []
 curent_round_score = 0
 
 combinations = [
-    ['1 2 3 4 5 6', '1', '1 1 1', '1 1 1 1', '1 1 1 1 1', '1 1 1 1 1 1', 
+    '1 2 3 4 5 6', '1', '1 1 1', '1 1 1 1', '1 1 1 1 1', '1 1 1 1 1 1', 
     '2 2 2', '2 2 2 2', '2 2 2 2 2', '2 2 2 2 2 2', 
     '3 3 3', '3 3 3 3', '3 3 3 3 3', '3 3 3 3 3 3', 
     '4 4 4', '4 4 4 4', '4 4 4 4 4', '4 4 4 4 4 4', 
     '5', '5 5 5', '5 5 5 5', '5 5 5 5 5', '5 5 5 5 5 5', 
-    '6 6 6', '6 6 6 6', '6 6 6 6 6', '6 6 6 6 6 6'], 
-    [1500, '100', 1000, 2000, 3000, 4000, 
-    200, 400, 600, 800, 
-    300, 600, 900, 1200, 
-    400, 800, 1200, 1600, 
-    50, 500, 1000, 1500, 2000, 
-    600, 1200, 1800, 2400] ]
+    '6 6 6', '6 6 6 6', '6 6 6 6 6', '6 6 6 6 6 6']
 
 def game_results(message, n):
     arr.clear()
@@ -42,25 +36,24 @@ def check_combinations(arr, bool):
     arr.sort()
     str_arr = ' '.join(map(str, arr))
 
-    for i in range(len(combinations[0])):
+    for i in combinations:
         count = 0
         pos = 0
-        while str_arr.find(combinations[0][i], pos) != -1:
+        while str_arr.find(i, pos) != -1:
             count += 1
 
-            pos = (str_arr.find(combinations[0][i], pos) + len(combinations[0][i]))
+            pos = (str_arr.find(i, pos) + len(i))
         
         if count > 0:
             for j in range(count):
-                txt = combinations[0][i] + " - " + str(combinations[1][i])
-                item = types.InlineKeyboardButton(txt, callback_data=combinations[1][i])
+                txt = i
+                item = types.InlineKeyboardButton(txt, callback_data=i)
                 inline_keyboard_arr.append(item)
 
     if bool:
         if len(inline_keyboard_arr) > 0:
             for i in inline_keyboard_arr:
                 result_markup.add(i)
-            result_markup.add(types.InlineKeyboardButton('Наступние підкидання',callback_data='next'))
             return result_markup
         else:
             kkk = 0
@@ -68,11 +61,9 @@ def check_combinations(arr, bool):
         if len(inline_keyboard_arr) > 0:
             for i in inline_keyboard_arr:
                 result_markup.add(i)
-            result_markup.add(types.InlineKeyboardButton('Наступние підкидання',callback_data='next'))
             return result_markup
         else:
             curent_round_score = 0
-            result_markup.add(types.InlineKeyboardButton('Наступние підкидання',callback_data='next'))
             return result_markup
 
 
@@ -84,7 +75,8 @@ def start_message(message):
   markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
   item1 = types.KeyboardButton("Почати")
   item2 = types.KeyboardButton("Допомога")
-  markup.add(item1, item2)
+  item3 = types.KeyboardButton("Наступне підкидання")
+  markup.add(item1, item2, item3)
 
   bot.send_message(message.chat.id, config.Greeting, reply_markup=markup)
   
@@ -94,13 +86,18 @@ def check_text(message):
         if message.text == 'Почати':
             game_results(message, 6)
 
+        if message.text == 'Наступне підкидання':
+            game_results(message, len(arr))
+            
+
 @bot.callback_query_handler(func = lambda call: True)
 def callback_inline(call):
     try:
         if call.message:
-            if call.data == '100':
-                print(arr)
-                arr.remove(1)
+            if call.data in combinations:
+                x = list(map(int, call.data.split()))
+                for i in x:
+                    arr.remove(i)
                 result_markup = check_combinations(arr, True)
                 buffer = 'Результат раунду:' + ' '.join(map(str, arr)) + "\n Можливі комбінації: "
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=buffer, reply_markup=result_markup)
