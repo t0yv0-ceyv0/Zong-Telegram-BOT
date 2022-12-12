@@ -5,9 +5,9 @@ import random
 from telebot import types
 
 buffer = ''
-score = [0]
+score = 0
+curent_round_score = 0
 arr = []
-curent_round_score = [0]
 
 combinations = {
     '1 2 3 4 5 6' : 1500, '1' : 100, '1 1 1' : 1000, '1 1 1 1' : 2000, '1 1 1 1 1' : 3000, '1 1 1 1 1 1' : 4000, 
@@ -26,7 +26,7 @@ def game_results(message, n):
         bot.send_sticker(message.chat.id, stik)
     buffer = 'Результат раунду:' + ' '.join(map(str, arr))
     result_markup = check_combinations(arr, False)
-    buffer = buffer + "\n Поточна кількість очків:" + str(curent_round_score[0]) + "\n Можливі комбінації: "
+    buffer = buffer + "\n Поточна кількість очків:" + str(curent_round_score) + "\n Можливі комбінації: "
     bot.send_message(message.chat.id, buffer, reply_markup=result_markup)
 
 def check_combinations(arr, bool):
@@ -36,6 +36,7 @@ def check_combinations(arr, bool):
     str_arr = ' '.join(map(str, arr))
 
     for i in combinations:
+        global curent_round_score
         count = 0
         pos = 0
         while str_arr.find(i, pos) != -1:
@@ -50,20 +51,16 @@ def check_combinations(arr, bool):
                 inline_keyboard_arr.append(item)
 
     if bool:
-        if len(inline_keyboard_arr) > 0:
-            for i in inline_keyboard_arr:
-                result_markup.add(i)
-            return result_markup
-        else:
-            curent_round_score[0] = 0
-            return result_markup
+        for i in inline_keyboard_arr:
+            result_markup.add(i)
+        return result_markup
     else:
         if len(inline_keyboard_arr) > 0:
             for i in inline_keyboard_arr:
                 result_markup.add(i)
             return result_markup
         else:
-            curent_round_score[0] = 0
+            curent_round_score = 0
             return result_markup
 
 
@@ -84,6 +81,10 @@ def start_message(message):
 def check_text(message):
     if message.chat.type == 'private':
         if message.text == 'Почати':
+            global score 
+            global curent_round_score
+            score = score + curent_round_score
+            curent_round_score = 0
             bot.send_message(message.chat.id, 'Поточна кількість очок в грі: ' + str(score))
             game_results(message, 6)
 
@@ -97,12 +98,13 @@ def callback_inline(call):
     try:
         if call.message:
             if call.data in combinations:
-                curent_round_score[0] += combinations[call.data]
+                global curent_round_score
+                curent_round_score = curent_round_score + combinations[call.data]
                 x = list(map(int, call.data.split()))
                 for i in x:
                     arr.remove(i)
                 result_markup = check_combinations(arr, True)
-                buffer = 'Результат раунду:' + ' '.join(map(str, arr)) + "\n Поточна кількість очків:" + str(curent_round_score[0]) + "\n Можливі комбінації: "
+                buffer = 'Результат раунду:' + ' '.join(map(str, arr)) + "\n Поточна кількість очків:" + str(curent_round_score) + "\n Можливі комбінації: "
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=buffer, reply_markup=result_markup)
 
     except Exception as e:
