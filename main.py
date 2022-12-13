@@ -7,6 +7,7 @@ from telebot import types
 buffer = ''
 score = 0
 curent_round_score = 0
+can = True
 arr = []
 
 combinations = {
@@ -49,19 +50,17 @@ def check_combinations(arr, bool):
                 txt = i + " - " + str(combinations[i])
                 item = types.InlineKeyboardButton(txt, callback_data=i)
                 inline_keyboard_arr.append(item)
-
-    if bool:
-        for i in inline_keyboard_arr:
+    for i in inline_keyboard_arr:
             result_markup.add(i)
+    
+    if bool:
         return result_markup
     else:
-        if len(inline_keyboard_arr) > 0:
-            for i in inline_keyboard_arr:
-                result_markup.add(i)
-            return result_markup
-        else:
+        if len(inline_keyboard_arr) == 0:
             curent_round_score = 0
-            return result_markup
+            global can
+            can = False
+        return result_markup
 
 
 bot=telebot.TeleBot(config.Token)
@@ -70,27 +69,41 @@ bot=telebot.TeleBot(config.Token)
 def start_message(message):
 
   markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-  item1 = types.KeyboardButton("Почати")
-  item2 = types.KeyboardButton("Допомога")
-  item3 = types.KeyboardButton("Наступне підкидання")
+  item1 = types.KeyboardButton("Нова гра")
+  item2 = types.KeyboardButton("Наступне підкидання")
+  item3 = types.KeyboardButton("Продовжити раунд")
   markup.add(item1, item2, item3)
 
   bot.send_message(message.chat.id, config.Greeting, reply_markup=markup)
   
 @bot.message_handler(content_types=['text'])
 def check_text(message):
+    global can
+    global score
+    global curent_round_score
     if message.chat.type == 'private':
-        if message.text == 'Почати':
-            global score 
-            global curent_round_score
+        if message.text == 'Нова гра':
+            can = True
+            score = 0
+            curent_round_score = 0
+            bot.send_message(message.chat.id, 'Поточна кількість очок в грі: ' + str(score))
+            game_results(message, 6)
+        
+        if message.text == 'Наступне підкидання':
+            can = True
             score = score + curent_round_score
             curent_round_score = 0
             bot.send_message(message.chat.id, 'Поточна кількість очок в грі: ' + str(score))
             game_results(message, 6)
-
-        if message.text == 'Наступне підкидання':
-            bot.send_message(message.chat.id, 'Поточна кількість очок в грі: ' + str(score))
-            game_results(message, len(arr))
+        
+        if message.text == 'Продовжити раунд':
+            if len(arr) > 0 and can:
+                bot.send_message(message.chat.id, 'Поточна кількість очок в грі: ' + str(score))
+                game_results(message, len(arr))
+            elif len(arr) == 0:
+                bot.send_message(message.chat.id, 'Більше не залишилось кубиків')
+            else:
+                bot.send_message(message.chat.id, 'Випав зонк')
             
 
 @bot.callback_query_handler(func = lambda call: True)
