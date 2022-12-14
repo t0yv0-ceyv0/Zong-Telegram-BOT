@@ -1,13 +1,14 @@
 import config
 import telebot
-import random  
 
+from random import randrange
 from telebot import types
 
 buffer = ''
 score = 0
 curent_round_score = 0
 can = True
+redy = True
 arr = []
 
 combinations = {
@@ -21,7 +22,7 @@ combinations = {
 def game_results(message, n):
     arr.clear()
     for i in range(n):
-        arr.append(random.randrange(1,7))
+        arr.append(randrange(1,7))
         stik_path = 'stik\dice_' + str(arr[i]) + '.tgs'
         stik = open(stik_path, 'rb')
         bot.send_sticker(message.chat.id, stik)
@@ -79,6 +80,7 @@ def start_message(message):
 @bot.message_handler(content_types=['text'])
 def check_text(message):
     global can
+    global redy
     global score
     global curent_round_score
     if message.chat.type == 'private':
@@ -97,13 +99,14 @@ def check_text(message):
             game_results(message, 6)
         
         if message.text == 'Продовжити раунд':
-            if len(arr) > 0 and can:
+            if len(arr) > 0 and can and redy:
                 bot.send_message(message.chat.id, 'Поточна кількість очок в грі: ' + str(score))
+                redy = False
                 game_results(message, len(arr))
             elif len(arr) == 0:
                 bot.send_message(message.chat.id, 'Більше не залишилось кубиків')
             else:
-                bot.send_message(message.chat.id, 'Випав зонк')
+                bot.send_message(message.chat.id, 'Ви не обрали жодної комбінації')
             
 
 @bot.callback_query_handler(func = lambda call: True)
@@ -111,7 +114,9 @@ def callback_inline(call):
     try:
         if call.message:
             if call.data in combinations:
+                global redy
                 global curent_round_score
+                redy = True
                 curent_round_score = curent_round_score + combinations[call.data]
                 x = list(map(int, call.data.split()))
                 for i in x:
