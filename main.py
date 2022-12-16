@@ -5,10 +5,9 @@ from random import randrange
 from telebot import types
 
 arr = []
-buffer = ''
 score = 0
 curent_round_score = 0
-max_score = 4000
+max_score = 100
 can = True
 redy = True
 game_end = True
@@ -21,19 +20,17 @@ combinations = {
     '5' : 50, '5 5 5' : 500, '5 5 5 5' : 1000, '5 5 5 5 5' : 1500, '5 5 5 5 5 5' : 2000, 
     '6 6 6' : 600, '6 6 6 6' : 1200, '6 6 6 6 6' : 1800, '6 6 6 6 6 6' : 2400}
 
-def game_results(message, n):
+def round_random(n):
+
     arr.clear()
     for i in range(n):
         arr.append(randrange(1,7))
-        stik_path = 'stik\dice_' + str(arr[i]) + '.tgs'
-        stik = open(stik_path, 'rb')
-        bot.send_sticker(message.chat.id, stik)
-    buffer = 'Результат раунду:' + ' '.join(map(str, arr))
-    result_markup = check_combinations(arr, False)
-    buffer = buffer + "\n Поточна кількість очків:" + str(curent_round_score) + "\n Можливі комбінації: "
-    bot.send_message(message.chat.id, buffer, reply_markup=result_markup)
+    
+    txt = 'Результат раунду:' + ' '.join(map(str, arr)) + "\n Поточна кількість очків:" + str(curent_round_score) + "\n Можливі комбінації: "
+    
+    return txt
 
-def check_combinations(arr, bool):
+def check_combinations(bool):
     inline_keyboard_arr = []
     result_markup = types.InlineKeyboardMarkup(row_width=2)
     arr.sort()
@@ -65,31 +62,14 @@ def check_combinations(arr, bool):
             can = False
         return result_markup
 
-def new_game(message):
-    global game_end, can, redy, score, curent_round_score
-    game_end = False
-    can = True
-    score = 0
-    curent_round_score = 0
-    bot.send_message(message.chat.id, 'Поточна кількість очок в грі: ' + str(score))
-    game_results(message, 6)
+def send_message(message, txt, result_markup):
+    bot.send_message(message.chat.id, txt, reply_markup=result_markup)
 
-def next_round(message):
-    global game_end, can, redy, score, curent_round_score
-    can = True
-    bot.send_message(message.chat.id, 'Поточна кількість очок в грі: ' + str(score))
-    game_results(message, 6)
+def send_stikers(message):
 
-def continue_round(message):
-    global game_end, can, redy, score, curent_round_score
-    if len(arr) > 0 and can and redy:
-        bot.send_message(message.chat.id, 'Поточна кількість очок в грі: ' + str(score))
-        redy = False
-        game_results(message, len(arr))
-    elif len(arr) == 0:
-        bot.send_message(message.chat.id, 'Більше не залишилось кубиків')
-    else:
-        bot.send_message(message.chat.id, 'Ви не обрали жодної комбінації')
+    for i in arr:
+        stik = open('stik\dice_' + str(i) + '.tgs', 'rb')
+        bot.send_sticker(message.chat.id, stik)
 
 bot=telebot.TeleBot(config.Token)
 
@@ -100,8 +80,8 @@ def start_message(message):
   item1 = types.KeyboardButton("Нова гра")
   item2 = types.KeyboardButton("Наступне підкидання")
   item3 = types.KeyboardButton("Продовжити раунд")
-  #item4 = types.KeyboardButton("Задати кількість очок до перемоги")
-  markup.add(item1, item2, item3)
+  item4 = types.KeyboardButton("Преглянути кількість очків")
+  markup.add(item1, item2, item3, item4)
 
   bot.send_message(message.chat.id, config.Greeting, reply_markup=markup)
   
@@ -109,42 +89,75 @@ def start_message(message):
 def check_text(message):
 
     global game_end, can, redy, score, curent_round_score
+
+    txt = ''
+
     if message.chat.type == 'private':
+
+        if message.text == 'Преглянути кількість очків':
+            send_message(message, "Кількість очок до перемоги: " + str(max_score) + "\n Ваша кількість очок: " + str(score), None)
+
         if message.text == 'Нова гра' and game_end:
-            new_game(message)
+            game_end = False
+            can = True
+            score = 0
+            curent_round_score = 0
+            txt = round_random(6)
+
+            send_stikers(message)
+            send_message(message, txt, check_combinations(False))
         
         if message.text == 'Наступне підкидання':
             score = score + curent_round_score
             curent_round_score = 0
+
             if max_score > score:
-                next_round(message)
+                can = True
+                txt = round_random(6)
+                send_stikers(message)
+                send_message(message, txt, check_combinations(False))
+
+
             else:
-                bot.send_message(message.chat.id, "Ви набрали потрібну кількість очків \n Ваша кількість очків: " + str(score))
+                send_message(message, "Ви набрали потрібну кількість очків \n Ваша кількість очків: " + str(score), None )
                 game_end = True
                 can = True
                 score = 0
                 curent_round_score = 0
 
         if message.text == 'Продовжити раунд':
-            continue_round(message)
+            
+            if len(arr) > 0 and can and redy:
+                redy = False
+                txt = round_random(len(arr))
+                send_stikers(message)
+                send_message(message, txt, check_combinations(False))
 
-            
-            
+            elif len(arr) == 0:
+                send_message(message, 'Більше не залишилось кубиків' + str(score), None )
+
+            else:
+                send_message(message, 'Ви не обрали жодної комбінації' + str(score), None )                     
 
 @bot.callback_query_handler(func = lambda call: True)
 def callback_inline(call):
     try:
         if call.message:
             if call.data in combinations:
-                global redy
-                global curent_round_score
+
+                global redy, curent_round_score
+
                 redy = True
                 curent_round_score = curent_round_score + combinations[call.data]
                 x = list(map(int, call.data.split()))
+
                 for i in x:
                     arr.remove(i)
-                result_markup = check_combinations(arr, True)
+
+                result_markup = check_combinations(True)
+
                 buffer = 'Результат раунду:' + ' '.join(map(str, arr)) + "\n Поточна кількість очків:" + str(curent_round_score) + "\n Можливі комбінації: "
+
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=buffer, reply_markup=result_markup)
 
     except Exception as e:
