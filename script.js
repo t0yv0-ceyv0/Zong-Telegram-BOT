@@ -19,9 +19,15 @@ let roundArr = [];
 let roundScore = 0, userScore = 0;
 let arrSize = 6;
 
-startGame.addEventListener("click", function(){generateNums(6)});
+startGame.addEventListener("click", NewGame);
 nextRound.addEventListener("click", function(){generateNums(arrSize)});
 claimScore.addEventListener("click", claim);
+
+function NewGame()
+{
+    startGame.hidden = true;
+    generateNums(6);
+}
 
 function generateNums(n)
 {
@@ -56,6 +62,7 @@ function searchCombinations(bool)
     {
         roundScore = 0;
         currentRoundScore.innerHTML = roundScore;
+        arrSize = 6;
     }
 }
 
@@ -78,6 +85,7 @@ function claim()
 {
     userScore = userScore + roundScore;
     roundScore = 0;
+    arrSize = 6;
     gameScore.innerHTML = userScore;
     currentRoundScore.innerHTML = roundScore;
 }
