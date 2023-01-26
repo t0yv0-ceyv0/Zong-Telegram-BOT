@@ -1,4 +1,52 @@
-#content
+body
 {
-    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 800px;
+    background-size: 100%;
+    background-color: rgb(209, 111, 75);
+}
+
+.player
+{
+    margin: 5px;
+    display: inline-block;
+    text-align: center;
+    width: 250px;
+    border: 1px solid black;
+}
+
+.content
+{
+    display: inline-block;
+    width: 250px;
+    border: 1px solid black;
+}
+
+#dice
+{
+    margin-left: auto;
+    margin-right: auto;
+    width: 90px;
+    border: 1px solid black;
+    background-color: white;
+    text-align: center;
+}
+
+#combinations
+{
+    width: 250px;
+    height: 70px;
+}
+
+#combinationBtn
+{
+    border: 1px solid black;
+    margin: 1px;
+    width: 120px;
+    height: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
 }

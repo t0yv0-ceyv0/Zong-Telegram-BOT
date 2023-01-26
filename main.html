@@ -4,22 +4,43 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zonk</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Зонк</title>
 </head>
 <body>
-    <div class="row" id="main">
-        <div id = "content">
-            <div id="playField">6 5 4 3 2 1</div>
-            <div id="currentCombinations"></div>
-            <label>Поточна кількість очок: </label>
-            <div id="currentScore" >0</div>
-            <label>Загальна кількість очок: </label>
-            <div id="gameScore" >0</div>
-            <button id="startBtn">Почати гру</button>
-            <button id="nextRoundBtn">Наступний раунд</button>
-            <button id="claimScore">Забрати очки</button>
+    <main>
+        <section class="player player--0">
+            <h2 class="name" id="name--0">Гравець 1</h2>
+            <p class="score" id="score--0">0</p>
+            <div class="current">
+                <p>Поточна кількість очок: </p>
+                <p class="current-score" id="current--0">0</p>
+            </div>
+        </section>
+
+        <div class="content">
+
+            <p id="dice">6 5 4 3 2 1</p>
+
+            <div id="combinations"></div>
+
         </div>
-    </div>
+
+        <section class="player player--1">
+            <h2 class="name" id="name--1">Гравець 2</h2>
+            <p class="score" id="score--1">0</p>
+            <div class="current">
+                <p>Поточна кількість очок: </p>
+                <p class="current-score" id="current--1">0</p>
+            </div>
+        </section>
+
+        <button id="btn btn--roll">Наступний раунд</button>
+        <button id="btn btn--hold">Забрати очки</button>
+        <button id="btn btn--new">Почати гру</button>
+        
+        <div>Ціль 4000 очок</div>
+    </main>
     <script src="script.js"></script>
 </body>
 </html>

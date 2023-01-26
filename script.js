@@ -1,10 +1,13 @@
-let gameField = document.getElementById("playField");
-let startGame = document.getElementById("startBtn");
-let nextRound = document.getElementById("nextRoundBtn");
-let claimScore = document.getElementById("claimScore");
-let combinationsField = document.getElementById("currentCombinations");
-let currentRoundScore = document.getElementById("currentScore");
-let gameScore = document.getElementById("gameScore");
+let gameField = document.getElementById("dice");
+let startGame = document.getElementById("btn btn--new");
+let nextRound = document.getElementById("btn btn--roll");
+let claimScore = document.getElementById("btn btn--hold");
+let combinationsField = document.getElementById("combinations");
+let currentRoundScore = document.getElementById("current--0");
+let gameScore = document.getElementById("score--0");
+let roundArr = [];
+let roundScore = 0, userScore = 0;
+let arrSize = 6;
 
 const combinations = new Map([
     ['1 2 3 4 5 6', 1500], ['1', 100], ['1 1 1', 1000], ['1 1 1 1', 2000], ['1 1 1 1 1', 3000], ['1 1 1 1 1 1', 4000], 
@@ -14,10 +17,6 @@ const combinations = new Map([
     ['5', 50], ['5 5 5', 500], ['5 5 5 5', 1000], ['5 5 5 5 5', 1500], ['5 5 5 5 5 5', 2000], 
     ['6 6 6', 600], ['6 6 6 6', 1200], ['6 6 6 6 6', 1800], ['6 6 6 6 6 6', 2400]
   ]);
-
-let roundArr = [];
-let roundScore = 0, userScore = 0;
-let arrSize = 6;
 
 startGame.addEventListener("click", NewGame);
 nextRound.addEventListener("click", function(){generateNums(arrSize)});
@@ -53,6 +52,7 @@ function searchCombinations(bool)
             li.value = key;
             li.addEventListener("click", function(){addScore(li.value)});
             li.innerHTML = key + ' - ' + value;
+            li.id = "combinationBtn";
             combinationsField.appendChild(li);
         }
 
