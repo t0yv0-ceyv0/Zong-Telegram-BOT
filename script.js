@@ -1,14 +1,24 @@
-let gameField = document.getElementById("dice");
-let startGame = document.getElementById("btn btn--new");
-let nextRound = document.getElementById("btn btn--roll");
-let claimScore = document.getElementById("btn btn--hold");
-let combinationsField = document.getElementById("combinations");
-let currentRoundScore = document.getElementById("current--0");
-let gameScore = document.getElementById("score--0");
+const btnNew = document.querySelector(".btn--new");
+const btnRoll = document.querySelector(".btn--roll");
+const btnHold = document.querySelector(".btn--hold");
+const field  = document.querySelector(".dice");
+const combinationsField = document.querySelector(".combinations");
+
+//Player current score
+const currentPlayer0Score = document.getElementById("current--0");
+const currentPlayer1Score = document.getElementById("current--1");
+
+//Player game score
+const scorePlayer0 = document.getElementById("score--0");
+const scorePlayer1 = document.getElementById("score--1");
+
+let currentScore0 = 0, currentScore1 = 0;
+let score0 = 0, score1 = 0;
+
 let roundArr = [];
-let roundScore = 0, userScore = 0;
 let arrSize = 6;
 
+//Zonk combinations
 const combinations = new Map([
     ['1 2 3 4 5 6', 1500], ['1', 100], ['1 1 1', 1000], ['1 1 1 1', 2000], ['1 1 1 1 1', 3000], ['1 1 1 1 1 1', 4000], 
     ['2 2 2', 200], ['2 2 2 2', 400], ['2 2 2 2 2', 600], ['2 2 2 2 2 2', 800], 
@@ -18,13 +28,14 @@ const combinations = new Map([
     ['6 6 6', 600], ['6 6 6 6', 1200], ['6 6 6 6 6', 1800], ['6 6 6 6 6 6', 2400]
   ]);
 
-startGame.addEventListener("click", NewGame);
-nextRound.addEventListener("click", function(){generateNums(arrSize)});
-claimScore.addEventListener("click", claim);
 
-function NewGame()
+
+btnNew.addEventListener("click", newGame);
+btnRoll.addEventListener("click", function(){generateNums(arrSize)});
+btnHold.addEventListener("click", hold);
+
+function newGame()
 {
-    startGame.hidden = true;
     generateNums(6);
 }
 
@@ -34,7 +45,8 @@ function generateNums(n)
     for (let i = 0; i < n; i++) {
         roundArr.push(Math.floor(Math.random() * 6) + 1);
     }
-    gameField.innerHTML = roundArr.join(' ');
+
+    field.textContent = roundArr.join(' ');
     searchCombinations(false);
 }
 
@@ -74,18 +86,18 @@ function addScore(val)
         let i = roundArr.indexOf(Number(key));
         roundArr.splice(i,1);
     }
-    gameField.innerHTML = roundArr.join(' ');
-    roundScore = roundScore + combinations.get(val);
-    currentRoundScore.innerHTML = roundScore;
+    field.textContent = roundArr.join(' ');
+    currentScore0 = currentScore0 + combinations.get(val);
+    currentPlayer0Score.textContent = currentScore0;
     arrSize = roundArr.length;
     searchCombinations(true);
 }
 
-function claim()
+function hold()
 {
-    userScore = userScore + roundScore;
-    roundScore = 0;
+    score0 = score0 + currentScore0;
+    currentScore0 = 0;
     arrSize = 6;
-    gameScore.innerHTML = userScore;
-    currentRoundScore.innerHTML = roundScore;
+    scorePlayer0.innerHTML = score0;
+    currentPlayer0Score.innerHTML = currentScore0;
 }

@@ -1,40 +1,137 @@
 body
 {
-    margin-left: auto;
-    margin-right: auto;
-    width: 800px;
     background-size: 100%;
     background-color: rgb(209, 111, 75);
 }
 
+main
+{
+    border: 1px solid black;
+    width: 900px;
+    height: 500px;
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+main .player--0
+{
+    position: absolute;
+    margin-top: 24px;
+}
+
+main .player--1
+{
+    position: absolute;
+    margin-top: 24px;
+    margin-left: 493px;
+}
+
+main .purpose
+{
+    position: absolute;
+    align-self: center;
+    margin-left: 390px;
+    margin-bottom: 300px;
+}
+
+main .dice
+{
+    position: absolute;
+    align-self: center;
+    margin-left: 390px;
+    margin-bottom: 140px;
+}
+
+main .combinations
+{
+    position: absolute;
+    align-self: center;
+    margin-left: 325px;
+}
+
+main .btn--new
+{
+    margin-left: 390px;
+    margin-top: 30px;
+    position: absolute;
+}
+
+main .btn--roll
+{
+    margin-left: 390px;
+    margin-top: 300px;
+    align-self: center;
+    position: absolute;
+}
+
+main .btn--hold
+{
+    margin-left: 390px;
+    margin-top: 350px;
+    align-self: center;
+    position: absolute;
+}
+
 .player
 {
+    display: flex;
     margin: 5px;
-    display: inline-block;
     text-align: center;
-    width: 250px;
+    width: 400px;
+    height: 450px;
     border: 1px solid black;
 }
 
-.content
+
+.player .name
 {
-    display: inline-block;
-    width: 250px;
+    position: absolute;
+    width: 130px;
     border: 1px solid black;
+    margin-left: 135px;
 }
 
-#dice
+.player .score
+{
+    position: absolute;
+    width: 80px;
+    border: 1px solid black;
+    margin-top: 70px;
+    margin-left: 160px;
+}
+
+.player .current
+{
+    position: absolute;
+    align-self: flex-end;
+    width: 120px;
+    border: 1px solid black;
+    margin-bottom: 20px;
+    margin-left: 140px;
+}
+
+.purpose
+{
+    border: 1px solid black;
+    width: 120px;
+    text-align: center;
+}
+
+.dice
 {
     margin-left: auto;
     margin-right: auto;
-    width: 90px;
+    width: 120px;
+    height: 20px;
     border: 1px solid black;
     background-color: white;
     text-align: center;
 }
 
-#combinations
+.combinations
 {
+    border: 1px solid black;
     width: 250px;
     height: 70px;
 }
@@ -48,5 +145,15 @@ body
     text-align: center;
     text-decoration: none;
     display: inline-block;
+    font-size: 12px;
+}
+
+.btn 
+{
+    margin: 1px;
+    width: 120px;
+    height: 20px;
+    text-align: center;
+    text-decoration: none;
     font-size: 12px;
 }
