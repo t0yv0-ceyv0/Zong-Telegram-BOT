@@ -3,6 +3,7 @@ const btnRoll = document.querySelector(".btn--roll");
 const btnHold = document.querySelector(".btn--hold");
 const field  = document.querySelector(".dice");
 const combinationsField = document.querySelector(".combinations");
+const active = document.querySelector(".activePlayer");
 
 //Player current score
 const currentPlayer0Score = document.getElementById("current--0");
@@ -14,6 +15,7 @@ const scorePlayer1 = document.getElementById("score--1");
 
 let currentScore0 = 0, currentScore1 = 0;
 let score0 = 0, score1 = 0;
+let activePlayer = 0;
 
 let roundArr = [];
 let arrSize = 6;
@@ -36,6 +38,10 @@ btnHold.addEventListener("click", hold);
 
 function newGame()
 {
+    currentScore0 = 0;
+    currentScore1 = 0;
+    score0 = 0;
+    score1 = 0;
     generateNums(6);
 }
 
@@ -70,11 +76,31 @@ function searchCombinations(bool)
 
     }
 
-    if (combinationsField.children.length < 1 && bool != true)
+    if (combinationsField.children.length < 1)
     {
-        roundScore = 0;
-        currentRoundScore.innerHTML = roundScore;
-        arrSize = 6;
+        if (bool != true)
+        {
+            if (activePlayer == 0)
+            {
+                currentScore0 = 0;
+                currentPlayer0Score.textContent = currentScore0;
+                activePlayer = 1;
+                active.textContent = "Черга 2 гравця";
+            }
+            else
+            {
+                currentScore1 = 0;
+                currentPlayer1Score.textContent = currentScore1;
+                activePlayer = 0;
+                active.textContent = "Черга 1 гравця";
+            }
+            arrSize = 6;
+        }
+        
+        if (arrSize < 1)
+        {
+            hold();
+        }
     }
 }
 
@@ -87,17 +113,39 @@ function addScore(val)
         roundArr.splice(i,1);
     }
     field.textContent = roundArr.join(' ');
-    currentScore0 = currentScore0 + combinations.get(val);
-    currentPlayer0Score.textContent = currentScore0;
+    if (activePlayer == 0)
+    {
+        currentScore0 = currentScore0 + combinations.get(val);
+        currentPlayer0Score.textContent = currentScore0;
+    }
+    else
+    {
+        currentScore1 = currentScore1 + combinations.get(val);
+        currentPlayer1Score.textContent = currentScore1;
+    }
     arrSize = roundArr.length;
     searchCombinations(true);
 }
 
 function hold()
 {
-    score0 = score0 + currentScore0;
-    currentScore0 = 0;
+    if (activePlayer == 0)
+    {
+        score0 = score0 + currentScore0;
+        currentScore0 = 0;
+        scorePlayer0.textContent = score0;
+        currentPlayer0Score.textContent = currentScore0;
+        activePlayer = 1;
+        active.textContent = "Черга 2 гравця";
+    }
+    else
+    {
+        score1 = score1 + currentScore1;
+        currentScore1 = 0;
+        scorePlayer1.textContent = score1;
+        currentPlayer1Score.textContent = currentScore1;
+        activePlayer = 0;
+        active.textContent = "Черга 1 гравця";
+    }
     arrSize = 6;
-    scorePlayer0.innerHTML = score0;
-    currentPlayer0Score.innerHTML = currentScore0;
 }

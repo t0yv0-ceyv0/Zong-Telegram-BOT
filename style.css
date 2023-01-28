@@ -35,6 +35,15 @@ main .purpose
     margin-bottom: 300px;
 }
 
+main .activePlayer
+{
+    border: 1px solid black;
+    position: absolute;
+    align-self: center;
+    margin-left: 365px;
+    margin-bottom: 200px;
+}
+
 main .dice
 {
     position: absolute;
