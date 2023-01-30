@@ -13,9 +13,13 @@ const currentPlayer1Score = document.getElementById("current--1");
 const scorePlayer0 = document.getElementById("score--0");
 const scorePlayer1 = document.getElementById("score--1");
 
+const purposeGetValue = document.getElementById("purpose--input");
+const purposeText = document.getElementById("purpose--text");
+
 let currentScore0 = 0, currentScore1 = 0;
 let score0 = 0, score1 = 0;
 let activePlayer = 0;
+let purpose = purposeGetValue.value;
 
 let roundArr = [];
 let arrSize = 6;
@@ -38,6 +42,13 @@ btnHold.addEventListener("click", hold);
 
 function newGame()
 {
+    purpose = purposeGetValue.value;
+    if (purpose <= 0)
+    {
+        purpose = 4000;
+        purposeGetValue.value = purpose;
+    }
+    purposeText.textContent = purpose;
     currentScore0 = 0;
     currentScore1 = 0;
     score0 = 0;
@@ -113,6 +124,7 @@ function addScore(val)
         roundArr.splice(i,1);
     }
     field.textContent = roundArr.join(' ');
+
     if (activePlayer == 0)
     {
         currentScore0 = currentScore0 + combinations.get(val);
@@ -129,6 +141,7 @@ function addScore(val)
 
 function hold()
 {
+
     if (activePlayer == 0)
     {
         score0 = score0 + currentScore0;
@@ -137,6 +150,11 @@ function hold()
         currentPlayer0Score.textContent = currentScore0;
         activePlayer = 1;
         active.textContent = "Черга 2 гравця";
+        if (score0 >= purpose)
+        {
+            alert("Переміг перший гравець!");
+            newGame();
+        }
     }
     else
     {
@@ -146,6 +164,11 @@ function hold()
         currentPlayer1Score.textContent = currentScore1;
         activePlayer = 0;
         active.textContent = "Черга 1 гравця";
+        if (score1 >= purpose)
+        {
+            alert("Переміг другий гравець!");
+            newGame();
+        }
     }
     arrSize = 6;
 }

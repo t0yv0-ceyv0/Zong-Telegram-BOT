@@ -127,6 +127,13 @@ main .btn--hold
     text-align: center;
 }
 
+#purpose--input
+{
+    width: 110px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
 .dice
 {
     margin-left: auto;
